@@ -1,11 +1,12 @@
 package ru.Desktop.GUI;
 
-import org.bson.types.ObjectId;
+import ru.Desktop.models.Document;
+import ru.Desktop.repositories.MongoDBRepository;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 
@@ -19,6 +20,7 @@ public class GUI extends JFrame {
     private JButton viewButton;
     private JButton exitButton;
     private ArrayList<JCheckBox> checkboxList;
+    private ArrayList<Document> documents;
 
     public GUI() {
         // Настройка окна
@@ -31,7 +33,16 @@ public class GUI extends JFrame {
         setBounds(dimension.width / 2 - 300, dimension.height / 2 - 200, 600, 400);
         setMinimumSize(new Dimension(500, 200));
 
-        // Создаем список объектов для отображения
+        // Создаем список объектов для отображения ==============================
+        try {
+            MongoDBRepository mongoDBRepository = MongoDBRepository.getMongoDBRepository();
+            ArrayList<Document> allDocuments = mongoDBRepository.getAllDocuments();
+        } catch (IOException | ParseException | RuntimeException e) {
+            String msg = "Произошла ошибка " + e.getMessage();
+            JOptionPane.showMessageDialog(null, msg, "Ошибка", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            System.exit(0);
+        }
         checkboxList = new ArrayList<>();
         JPanel listPanel = new JPanel(new GridLayout(10, 1));
         for (int i = 0; i < 10; i++) {
@@ -39,7 +50,6 @@ public class GUI extends JFrame {
             listPanel.add(checkbox);
             checkboxList.add(checkbox);
         }
-
 
         // Создаем кнопки и панель для них
         createInvoiceButton = new JButton("Накладная");
@@ -53,6 +63,8 @@ public class GUI extends JFrame {
         // Обработчик событий
         eventHandler = new GUIEventHandler(this);
         createInvoiceButton.addActionListener(e -> eventHandler.handleCreateInvoiceButtonClick());
+        createPaymentOrderButton.addActionListener(e -> eventHandler.handleCreatePaymentOrderButtonClick());
+        createPaymentRequestButton.addActionListener(e -> eventHandler.handleCreatePaymentRequestButtonClick());
         saveButton.addActionListener(e -> eventHandler.handleSaveButtonClick());
         loadButton.addActionListener(e -> eventHandler.handleLoadButtonClick());
         exitButton.addActionListener(e -> eventHandler.handleExitButtonClick());
@@ -72,5 +84,17 @@ public class GUI extends JFrame {
         setLayout(new BorderLayout());
         add(buttonPanel, BorderLayout.EAST);
         add(listPanel, BorderLayout.WEST);
+    }
+
+    public ArrayList<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(ArrayList<Document> documents) {
+        this.documents = documents;
+    }
+
+    public void updateList(Document doc){
+        return;
     }
 }

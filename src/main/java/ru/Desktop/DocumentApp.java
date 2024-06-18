@@ -1,7 +1,6 @@
 package ru.Desktop;
 
 import ru.Desktop.GUI.GUI;
-import ru.Desktop.GUI.GUIEventHandler;
 
 import javax.swing.*;
 

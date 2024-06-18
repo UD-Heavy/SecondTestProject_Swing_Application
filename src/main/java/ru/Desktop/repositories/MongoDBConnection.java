@@ -1,4 +1,4 @@
-package ru.Desktop.utils;
+package ru.Desktop.repositories;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -36,7 +36,11 @@ public class MongoDBConnection {
         return mongoDBConnection;
     }
 
-    public MongoDatabase getDatabase(){
+    public MongoClient getMongoClient() {
+        return mongoClient;
+    }
+
+    public MongoDatabase getDatabase() {
         return database;
     }
 

@@ -1,7 +1,6 @@
 package ru.Desktop.GUI;
 
-import org.bson.Document;
-import ru.Desktop.Services.MongoDBRepository;
+import ru.Desktop.repositories.MongoDBRepository;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -13,17 +12,38 @@ public class GUIEventHandler {
     public GUIEventHandler(GUI gui) {
         try {
             this.gui = gui;
-            mongoDBRepository = new MongoDBRepository();
+            mongoDBRepository = MongoDBRepository.getMongoDBRepository();
         } catch (IOException e) {
             String msg = "Произошла ошибка " + e.getMessage();
-            JOptionPane.showConfirmDialog(null, msg, "Ошибка", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, msg, "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     public void handleCreateInvoiceButtonClick() {
-        // Добавить код для создания документа
-        System.out.println("123");
-        mongoDBRepository.createDocument();
+        InvoiceCreationDialog invoiceCreationDialog = null;
+        try {
+            invoiceCreationDialog = new InvoiceCreationDialog(gui);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void handleCreatePaymentOrderButtonClick() {
+        PaymentOrderCreationDialog PaymentOrderCreationDialog = null;
+        try {
+            PaymentOrderCreationDialog = new PaymentOrderCreationDialog(gui);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void handleCreatePaymentRequestButtonClick() {
+        PaymentRequestCreationDialog PaymentRequestCreationDialog = null;
+        try {
+            PaymentRequestCreationDialog = new PaymentRequestCreationDialog(gui);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void handleSaveButtonClick() {
@@ -44,4 +64,6 @@ public class GUIEventHandler {
             System.exit(0);
         }
     }
+
+
 }
