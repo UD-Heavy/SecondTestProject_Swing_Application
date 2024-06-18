@@ -47,11 +47,19 @@ public class GUIEventHandler {
     }
 
     public void handleSaveButtonClick() {
-        // Добавить код для сохранения документа
+        // Добавить код для сохранения документа в файл
     }
 
     public void handleLoadButtonClick() {
-        // Добавить код для загрузки документа
+        // Добавить код для загрузки документа из файла
+    }
+
+    public void handleDeleteButtonClick() {
+
+    }
+
+    public void handleViewButtonClick() {
+
     }
 
     public void handleExitButtonClick() {

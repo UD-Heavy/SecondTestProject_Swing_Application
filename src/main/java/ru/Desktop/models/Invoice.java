@@ -63,7 +63,7 @@ public class Invoice extends Document {
 
     @Override
     public String toString() {
-        return "Document Invoice{" + '\'' +
+        return "Invoice{" + '\'' +
                 "currency='" + currency + '\'' +
                 ", currencyRate=" + currencyRate +
                 ", product='" + product + '\'' +
