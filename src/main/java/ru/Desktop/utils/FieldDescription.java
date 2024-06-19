@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface FieldDescription {
+public @interface FieldDescription { // интерфейс, устанавливающий описание поля класса
     String value() default "";
 }

@@ -9,13 +9,13 @@ import org.bson.Document;
 import java.io.IOException;
 import java.util.Properties;
 
-public class MongoDBConnection {
+public class MongoDBConnection { // класс, устанавливающий соединение с mongodb
     private static volatile MongoDBConnection mongoDBConnection;
     private final MongoClient mongoClient;
-    private final MongoDatabase database;
     private final MongoCollection<Document> collection;
 
     private MongoDBConnection() throws IOException {
+        // устанавливаем зависимости из файла
         Properties properties = new Properties();
         properties.load(MongoDBConnection.class.getResourceAsStream("/mongodb.properties"));
 
@@ -23,25 +23,18 @@ public class MongoDBConnection {
         String dbName = properties.getProperty("dbName");
         String collectionName = properties.getProperty("collectionName");
 
-
+        // создаем объекты для работы с бд
         mongoClient = MongoClients.create(connectionString);
-        database = mongoClient.getDatabase(dbName);
+        MongoDatabase database = mongoClient.getDatabase(dbName);
         collection = database.getCollection(collectionName);
     }
 
+    // паттерн singleton
     public static synchronized MongoDBConnection getMongoDBConnection() throws IOException {
         if (mongoDBConnection == null) {
             mongoDBConnection = new MongoDBConnection();
         }
         return mongoDBConnection;
-    }
-
-    public MongoClient getMongoClient() {
-        return mongoClient;
-    }
-
-    public MongoDatabase getDatabase() {
-        return database;
     }
 
     public MongoCollection<Document> getCollection() {

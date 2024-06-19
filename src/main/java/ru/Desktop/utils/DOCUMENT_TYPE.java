@@ -3,7 +3,7 @@ package ru.Desktop.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum DOCUMENT_TYPE {
+public enum DOCUMENT_TYPE { // enum, содержащий виды документов
     INVOICE("Накладная"),
     PAYMENT_ORDER("Платёжка"),
     PAYMENT_REQUEST("Заявка на оплату");

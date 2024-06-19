@@ -10,7 +10,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame { // главное окно приложения
     private MongoDBRepository mongoDBRepository;
     private GUIEventHandler eventHandler;
     private JButton createInvoiceButton;
@@ -27,39 +27,15 @@ public class MainWindow extends JFrame {
     private ArrayList<JCheckBox> checkboxList;
 
     public MainWindow() {
-        // Настройка окна
-        setTitle("Document App");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
-        // Установка размеров окна
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width / 2 - 275, dimension.height / 2 - 200, 550, 400);
-        setMinimumSize(new Dimension(500, 400));
+        // настройка праметров отображения
+        setupWindow();
+        setupWindowSize();
 
-        // Создаем список объектов для отображения ==============================
-        try {
-            mongoDBRepository = MongoDBRepository.getMongoDBRepository();
-            documents = mongoDBRepository.getAllDocuments();
-        } catch (IOException | ParseException | RuntimeException e) {
-            JOptionPane.showMessageDialog(null, "Произошла ошибка " + e.getMessage(),
-                    "Ошибка", JOptionPane.ERROR_MESSAGE);
-            dispose();
-            mongoDBRepository.closeConnection();
-            System.exit(0);
-        }
+        // вывод списка документов из бд
+        creatStartDocumentList();
 
-        checkboxList = new ArrayList<>();
-        listPanel = new JPanel(new GridLayout(10, 1));
-        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        for (Document document : documents) {
-            JCheckBox checkbox = new JCheckBox((document.toString()));
-            listPanel.add(checkbox);
-            checkboxList.add(checkbox);
-        }
-        scrollPane = new JScrollPane(listPanel);
-
+        // отображение списка на экране
+        createListObject();
 
 
         // Создаем кнопки и панель для них
@@ -95,25 +71,72 @@ public class MainWindow extends JFrame {
         buttonPanel.add(deleteButton);
         buttonPanel.add(exitButton);
 
-
         // Добавить компоненты на форму
         setLayout(new BorderLayout());
         add(buttonPanel, BorderLayout.EAST);
         add(scrollPane, BorderLayout.WEST);
     }
 
-    public ArrayList<JCheckBox> getCheckboxList() {
-        return checkboxList;
+    // Настройка окна
+    private void setupWindow() {
+        setTitle("Document App");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
     }
+
+    // Установка размеров окна
+    private void setupWindowSize() {
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension dimension = toolkit.getScreenSize();
+        setBounds(dimension.width / 2 - 275, dimension.height / 2 - 200, 550, 400);
+        setMinimumSize(new Dimension(500, 400));
+    }
+
+    // Создаем список объектов для отображения
+    private void creatStartDocumentList() {
+        try {
+            mongoDBRepository = MongoDBRepository.getMongoDBRepository();
+            documents = mongoDBRepository.getAllDocuments();
+        } catch (IOException | ParseException | RuntimeException e) {
+            JOptionPane.showMessageDialog(null, "Произошла ошибка " + e.getMessage(),
+                    "Ошибка", JOptionPane.ERROR_MESSAGE);
+            dispose();
+            mongoDBRepository.closeConnection();
+            System.exit(0);
+        }
+    }
+
+    // настройка параметров списка
+    private void createListObject() {
+        checkboxList = new ArrayList<>();
+        // новый лист и сетка
+        listPanel = new JPanel(new GridLayout(10, 1));
+        // добавляем элемементы тольо по вертикали
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        // настройк границ
+        listPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        for (Document document : documents) {
+            JCheckBox checkbox = new JCheckBox((document.toString()));
+            listPanel.add(checkbox);
+            checkboxList.add(checkbox);
+        }
+        // установка скроллбара
+        scrollPane = new JScrollPane(listPanel);
+    }
+
     public ArrayList<Document> getDocuments() {
         return documents;
     }
 
+    // обновляем содержимое списка
     public void updateList(Document document) {
         documents.add(document);
         checkboxList.add(new JCheckBox(document.toString()));
         refreshListPanel();
     }
+
+    // обновляем отображение списка
     private void refreshListPanel() {
         listPanel.removeAll();
         checkboxList.clear();
@@ -126,7 +149,8 @@ public class MainWindow extends JFrame {
         listPanel.repaint();
     }
 
-    public ArrayList<Integer> deleteElements(){
+    // удаление элемента
+    public ArrayList<Integer> deleteElements() {
         ArrayList<Integer> indexes = new ArrayList<>();
         for (int i = checkboxList.size() - 1; i >= 0; i--) {
             if (checkboxList.get(i).isSelected()) {
@@ -139,6 +163,8 @@ public class MainWindow extends JFrame {
         listPanel.repaint();
         return indexes;
     }
+
+    // проверка, что выбран 1 документ
     public Integer getElement() {
         int selectedIndex = -1;
         int selectedCount = 0;
@@ -152,9 +178,5 @@ public class MainWindow extends JFrame {
             }
         }
         return selectedCount == 1 ? selectedIndex : null;
-    }
-
-    public ArrayList<Integer> importElements(){
-        return null;
     }
 }

@@ -15,7 +15,7 @@ import java.util.Date;
 import static ru.Desktop.utils.DOCUMENT_TYPE.PAYMENT_ORDER;
 import static ru.Desktop.repositories.MongoDBRepository.getMongoDBRepository;
 
-public class PaymentOrderCreationDialog extends JDialog {
+public class PaymentOrderCreationDialog extends JDialog { // окно создания накладной
 
     private final MongoDBRepository mongoDBRepository;
     private JTextField numberField;
@@ -26,7 +26,8 @@ public class PaymentOrderCreationDialog extends JDialog {
     private Document document;
 
     public PaymentOrderCreationDialog(MainWindow mainWindow) throws IOException {
-        super(mainWindow, "Создание накладной", true);
+        // настройка окна
+        super(mainWindow, "Создание платёжки", true);
         setSize(400, 300);
         setMinimumSize(new Dimension(450, 300));
         setLocationRelativeTo(mainWindow);
@@ -82,6 +83,7 @@ public class PaymentOrderCreationDialog extends JDialog {
         this.setVisible(true);
     }
 
+    // сохранение документа
     private void saveInvoice() {
         String number = numberField.getText();
         if (number.isEmpty()) {
@@ -113,6 +115,7 @@ public class PaymentOrderCreationDialog extends JDialog {
 
         document = new PaymentOrder(new ObjectId(), PAYMENT_ORDER, number, date, user, amount, employee);
         try {
+            // добавление объекта в бд
             mongoDBRepository.putDocument(document);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка при сохранении Документа");

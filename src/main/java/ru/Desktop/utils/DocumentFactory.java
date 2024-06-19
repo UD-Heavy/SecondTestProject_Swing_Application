@@ -4,10 +4,11 @@ import ru.Desktop.models.*;
 
 import java.text.ParseException;
 
-public abstract class DocumentFactory {
+public abstract class DocumentFactory { // класс, для реализации паттерна factory
     public static Document createDocument(DOCUMENT_TYPE type, org.bson.Document bson) throws ParseException {
         Document document;
 
+        // выбор типа документа
         switch (type) {
             case INVOICE -> document = new Invoice(bson);
             case PAYMENT_ORDER -> document = new PaymentOrder(bson);

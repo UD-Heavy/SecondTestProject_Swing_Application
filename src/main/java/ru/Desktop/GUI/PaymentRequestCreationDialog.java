@@ -15,7 +15,7 @@ import java.util.Date;
 import static ru.Desktop.utils.DOCUMENT_TYPE.PAYMENT_REQUEST;
 import static ru.Desktop.repositories.MongoDBRepository.getMongoDBRepository;
 
-public class PaymentRequestCreationDialog extends JDialog {
+public class PaymentRequestCreationDialog extends JDialog { // окно создания накладной
 
     private final MongoDBRepository mongoDBRepository;
     private JTextField numberField;
@@ -29,7 +29,8 @@ public class PaymentRequestCreationDialog extends JDialog {
     private Document document;
 
     public PaymentRequestCreationDialog(MainWindow mainWindow) throws IOException {
-        super(mainWindow, "Создание накладной", true);
+        // настройка окна
+        super(mainWindow, "Создание заявки на оплату", true);
         setSize(400, 300);
         setMinimumSize(new Dimension(450, 300));
         setLocationRelativeTo(mainWindow);
@@ -94,7 +95,7 @@ public class PaymentRequestCreationDialog extends JDialog {
         this.setVisible(true);
     }
 
-
+    // сохранение документа
     private void saveInvoice() {
         String number = numberField.getText();
         if (number.isEmpty()) {
@@ -111,16 +112,16 @@ public class PaymentRequestCreationDialog extends JDialog {
             throw new IllegalArgumentException("Пожалуйста, введите пользователя.");
         }
 
-        String counterparty = counterpartyField.getText();
-        if (counterparty.isEmpty()) {
-            throw new IllegalArgumentException("Пожалуйста, укажите контрагента.");
-        }
-
         double amount;
         try {
             amount = Double.parseDouble(amountField.getText());
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Пожалуйста, введите корректную сумму.");
+        }
+
+        String counterparty = counterpartyField.getText();
+        if (counterparty.isEmpty()) {
+            throw new IllegalArgumentException("Пожалуйста, укажите контрагента.");
         }
 
         String currency = currencyField.getText();
@@ -144,6 +145,7 @@ public class PaymentRequestCreationDialog extends JDialog {
 
         document = new PaymentRequest(new ObjectId(), PAYMENT_REQUEST, number, date, user, amount, counterparty, currency, currencyRate, commission);
         try {
+            // добавление объекта в бд
             mongoDBRepository.putDocument(document);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка при сохранении Документа");

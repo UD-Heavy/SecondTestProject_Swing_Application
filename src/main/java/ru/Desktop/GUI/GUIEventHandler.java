@@ -18,7 +18,7 @@ import static ru.Desktop.utils.DocumentFactory.createDocument;
 import static ru.Desktop.utils.FieldDescriptionPrinter.getDescriptions;
 
 
-public class GUIEventHandler {
+public class GUIEventHandler { // класс обработчиков событий
     private MainWindow mainWindow;
     private MongoDBRepository mongoDBRepository;
 
@@ -35,8 +35,10 @@ public class GUIEventHandler {
     public void handleCreateInvoiceButtonClick() {
         Document document;
         try {
+            // создаем новый документ
             document = new InvoiceCreationDialog(mainWindow).getDocument();
             if (document != null) {
+                // обновляем список на главном окне
                 mainWindow.updateList(document);
             }
         } catch (IOException e) {
@@ -48,8 +50,10 @@ public class GUIEventHandler {
     public void handleCreatePaymentOrderButtonClick() {
         Document document;
         try {
+            // создаем новый документ
             document = new PaymentOrderCreationDialog(mainWindow).getDocument();
             if (document != null) {
+                // обновляем список на главном окне
                 mainWindow.updateList(document);
             }
         } catch (IOException e) {
@@ -61,8 +65,10 @@ public class GUIEventHandler {
     public void handleCreatePaymentRequestButtonClick() {
         Document document;
         try {
+            // создаем новый документ
             document = new PaymentRequestCreationDialog(mainWindow).getDocument();
             if (document != null) {
+                // обновляем список на главном окне
                 mainWindow.updateList(document);
             }
         } catch (IOException e) {
@@ -73,6 +79,7 @@ public class GUIEventHandler {
     }
 
     public void handleSaveButtonClick() {
+        // проверка, что выбран 1 документ
         Integer index = mainWindow.getElement();
         if (index == null) {
             JOptionPane.showMessageDialog(null, "Выберите один элемент для просмотра",
@@ -80,6 +87,7 @@ public class GUIEventHandler {
             return;
         }
 
+        // открытие окна выбора директории
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int result = fileChooser.showSaveDialog(null);
@@ -115,16 +123,15 @@ public class GUIEventHandler {
 
             File file = new File(selectedDirectory, fileName);
             try {
+                // Сохранение документа в виде Json
                 FileWriter writer = new FileWriter(file);
                 String resultStr = convertModelDocumentToJson(mainWindow.getDocuments().get(index));
-//                String resultStr = "Тип документа: " +
-//                        getString(gui.getDocuments().get(index).getDocumentType()) +
-//                        "\n" + getDescriptions(gui.getDocuments().get(index));
+
                 writer.write(resultStr);
                 writer.close();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null,
-                                "Ошибка при сохранении файла: " + e.getMessage(),
+                        "Ошибка при сохранении файла: " + e.getMessage(),
                         "Ошибка", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -155,10 +162,13 @@ public class GUIEventHandler {
                 }
                 reader.close();
 
-                // Сохраняем содержимое файла в переменную importJson
+                // Сохраняем содержимое файла в bson
                 org.bson.Document document = org.bson.Document.parse(stringBuilder.toString());
+                // определяем тип документа
                 DOCUMENT_TYPE documentType = DOCUMENT_TYPE.valueOf(document.get("documentType").toString().toUpperCase());
+                // создание документа
                 ru.Desktop.models.Document myDocument = createDocument(documentType, document);
+                // сохранение в бд и вывод на экран
                 mongoDBRepository.putBson(document);
                 mainWindow.updateList(myDocument);
 
@@ -168,8 +178,7 @@ public class GUIEventHandler {
                         "Ошибка", JOptionPane.ERROR_MESSAGE);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
-            }
-            catch (MongoWriteException e){
+            } catch (MongoWriteException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка при загрузке файла: " +
                                 "такой документ уже существует.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -180,11 +189,15 @@ public class GUIEventHandler {
     public void handleDeleteButtonClick() {
         ArrayList<Document> documents;
         ArrayList<Integer> indexes = mainWindow.deleteElements();
+        // проверка, что элемент выбран
         if (!indexes.isEmpty()) {
             documents = mainWindow.getDocuments();
+
             for (int index : indexes) {
                 try {
+                    // удаляем документы из бд
                     mongoDBRepository.deleteById(documents.get(index));
+                    // удаляем документы с экрана
                     documents.remove(index);
                 } catch (JsonProcessingException e) {
                     JOptionPane.showMessageDialog(null, "Произошла ошибка " + e.getMessage(),
@@ -196,6 +209,7 @@ public class GUIEventHandler {
 
     public void handleViewButtonClick() {
         Integer index = mainWindow.getElement();
+        // проверка, что элемент выбран
         if (index == null) {
             JOptionPane.showMessageDialog(null, "Выберите один элемент для просмотра",
                     "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -221,6 +235,4 @@ public class GUIEventHandler {
             System.exit(0);
         }
     }
-
-
 }

@@ -3,6 +3,7 @@ package ru.Desktop.GUI;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.toedter.calendar.JDateChooser;
 import org.bson.types.ObjectId;
+
 import static ru.Desktop.utils.DOCUMENT_TYPE.INVOICE;
 
 import ru.Desktop.models.Document;
@@ -16,7 +17,7 @@ import java.util.Date;
 
 import static ru.Desktop.repositories.MongoDBRepository.getMongoDBRepository;
 
-public class InvoiceCreationDialog extends JDialog {
+public class InvoiceCreationDialog extends JDialog { // окно создания накладной
 
     private final MongoDBRepository mongoDBRepository;
     private JTextField numberField;
@@ -31,6 +32,7 @@ public class InvoiceCreationDialog extends JDialog {
     private Document document;
 
     public InvoiceCreationDialog(MainWindow mainWindow) throws IOException {
+        // настройка окна
         super(mainWindow, "Создание накладной", true);
         setSize(400, 300);
         setMinimumSize(new Dimension(450, 300));
@@ -96,8 +98,7 @@ public class InvoiceCreationDialog extends JDialog {
         this.setVisible(true);
     }
 
-
-
+    // сохранение документа
     private void saveInvoice() {
         String number = numberField.getText();
         if (number.isEmpty()) {
@@ -148,6 +149,7 @@ public class InvoiceCreationDialog extends JDialog {
         document = new Invoice(new ObjectId(), INVOICE, number, date, user, amount, currency,
                 currencyRate, product, quantity);
         try {
+            // добавление объекта в бд
             mongoDBRepository.putDocument(document);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка при сохранении Документа");

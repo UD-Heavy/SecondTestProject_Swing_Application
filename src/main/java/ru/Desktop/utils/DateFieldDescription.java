@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface DateFieldDescription {
+public @interface DateFieldDescription { // интерфейс для отметки поля даты
 }

@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 
 import java.io.IOException;
 
-public class ObjectIdSerializer extends JsonSerializer<ObjectId> {
+public class ObjectIdSerializer extends JsonSerializer<ObjectId> { // переопределение метода сериализации
     @Override
     public void serialize(ObjectId value, JsonGenerator jsonGen, SerializerProvider provider) throws IOException {
         jsonGen.writeString(value.toString());
