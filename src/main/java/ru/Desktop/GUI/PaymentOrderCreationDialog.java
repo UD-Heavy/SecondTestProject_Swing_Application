@@ -3,6 +3,7 @@ package ru.Desktop.GUI;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.toedter.calendar.JDateChooser;
 import org.bson.types.ObjectId;
+import ru.Desktop.models.Document;
 import ru.Desktop.models.PaymentOrder;
 import ru.Desktop.repositories.MongoDBRepository;
 
@@ -11,7 +12,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
 
-import static ru.Desktop.models.DOCUMENT_TYPE.PAYMENT_ORDER;
+import static ru.Desktop.utils.DOCUMENT_TYPE.PAYMENT_ORDER;
 import static ru.Desktop.repositories.MongoDBRepository.getMongoDBRepository;
 
 public class PaymentOrderCreationDialog extends JDialog {
@@ -22,12 +23,13 @@ public class PaymentOrderCreationDialog extends JDialog {
     private JTextField userField;
     private JTextField amountField;
     private JTextField employeeField;
+    private Document document;
 
-    public PaymentOrderCreationDialog(GUI gui) throws IOException {
-        super(gui, "Создание накладной", true);
+    public PaymentOrderCreationDialog(MainWindow mainWindow) throws IOException {
+        super(mainWindow, "Создание накладной", true);
         setSize(400, 300);
         setMinimumSize(new Dimension(450, 300));
-        setLocationRelativeTo(gui);
+        setLocationRelativeTo(mainWindow);
 
         mongoDBRepository = getMongoDBRepository();
 
@@ -109,11 +111,15 @@ public class PaymentOrderCreationDialog extends JDialog {
         }
 
 
-        PaymentOrder paymentOrder = new PaymentOrder(new ObjectId(), PAYMENT_ORDER, number, date, user, amount, employee);
+        document = new PaymentOrder(new ObjectId(), PAYMENT_ORDER, number, date, user, amount, employee);
         try {
-            mongoDBRepository.putDocument(paymentOrder);
+            mongoDBRepository.putDocument(document);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка при сохранении Документа");
         }
+    }
+
+    public Document getDocument() {
+        return document;
     }
 }

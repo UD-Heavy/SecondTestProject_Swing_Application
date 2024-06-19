@@ -1,11 +1,16 @@
 package ru.Desktop.models;
 
 import org.bson.types.ObjectId;
+import ru.Desktop.utils.DOCUMENT_TYPE;
+import ru.Desktop.utils.FieldDescription;
 
 import java.text.ParseException;
 import java.util.Date;
 
+import static ru.Desktop.utils.Convert.convertDateToFormatString;
+
 public class PaymentOrder extends Document {
+    @FieldDescription("Сотрудник")
     private String employee;
 
     public PaymentOrder(org.bson.Document document) throws ParseException {
@@ -28,8 +33,6 @@ public class PaymentOrder extends Document {
 
     @Override
     public String toString() {
-        return "PaymentOrder{ " +
-                " employee='" + employee + '\'' +
-                '}';
+        return "Платёжка от " + convertDateToFormatString(getDate()) + " номер " + getNumber();
     }
 }

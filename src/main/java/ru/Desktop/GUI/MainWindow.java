@@ -10,7 +10,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 
-public class GUI extends JFrame {
+public class MainWindow extends JFrame {
+    private MongoDBRepository mongoDBRepository;
     private GUIEventHandler eventHandler;
     private JButton createInvoiceButton;
     private JButton createPaymentOrderButton;
@@ -20,10 +21,12 @@ public class GUI extends JFrame {
     private JButton viewButton;
     private JButton deleteButton;
     private JButton exitButton;
-    private ArrayList<JCheckBox> checkboxList;
     private ArrayList<Document> documents;
+    private JPanel listPanel;
+    private JScrollPane scrollPane;
+    private ArrayList<JCheckBox> checkboxList;
 
-    public GUI() {
+    public MainWindow() {
         // Настройка окна
         setTitle("Document App");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,28 +34,33 @@ public class GUI extends JFrame {
         // Установка размеров окна
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width / 2 - 300, dimension.height / 2 - 200, 500, 400);
+        setBounds(dimension.width / 2 - 275, dimension.height / 2 - 200, 550, 400);
         setMinimumSize(new Dimension(500, 400));
 
         // Создаем список объектов для отображения ==============================
-        ArrayList<Document> allDocuments = null;
         try {
-            MongoDBRepository mongoDBRepository = MongoDBRepository.getMongoDBRepository();
-            allDocuments = mongoDBRepository.getAllDocuments();
+            mongoDBRepository = MongoDBRepository.getMongoDBRepository();
+            documents = mongoDBRepository.getAllDocuments();
         } catch (IOException | ParseException | RuntimeException e) {
-            String msg = "Произошла ошибка " + e.getMessage();
-            JOptionPane.showMessageDialog(null, msg, "Ошибка", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Произошла ошибка " + e.getMessage(),
+                    "Ошибка", JOptionPane.ERROR_MESSAGE);
             dispose();
+            mongoDBRepository.closeConnection();
             System.exit(0);
         }
+
         checkboxList = new ArrayList<>();
-        JPanel listPanel = new JPanel(new GridLayout(10, 1));
+        listPanel = new JPanel(new GridLayout(10, 1));
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
         listPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        for (Document allDocument : allDocuments) {
-            JCheckBox checkbox = new JCheckBox((allDocument.toString()));
+        for (Document document : documents) {
+            JCheckBox checkbox = new JCheckBox((document.toString()));
             listPanel.add(checkbox);
             checkboxList.add(checkbox);
         }
+        scrollPane = new JScrollPane(listPanel);
+
+
 
         // Создаем кнопки и панель для них
         createInvoiceButton = new JButton("Накладная");
@@ -91,18 +99,62 @@ public class GUI extends JFrame {
         // Добавить компоненты на форму
         setLayout(new BorderLayout());
         add(buttonPanel, BorderLayout.EAST);
-        add(listPanel, BorderLayout.WEST);
+        add(scrollPane, BorderLayout.WEST);
     }
 
+    public ArrayList<JCheckBox> getCheckboxList() {
+        return checkboxList;
+    }
     public ArrayList<Document> getDocuments() {
         return documents;
     }
 
-    public void setDocuments(ArrayList<Document> documents) {
-        this.documents = documents;
+    public void updateList(Document document) {
+        documents.add(document);
+        checkboxList.add(new JCheckBox(document.toString()));
+        refreshListPanel();
+    }
+    private void refreshListPanel() {
+        listPanel.removeAll();
+        checkboxList.clear();
+        for (Document document : documents) {
+            JCheckBox checkbox = new JCheckBox(document.toString());
+            listPanel.add(checkbox);
+            checkboxList.add(checkbox);
+        }
+        listPanel.revalidate();
+        listPanel.repaint();
     }
 
-    public void updateList(Document doc){
-        return;
+    public ArrayList<Integer> deleteElements(){
+        ArrayList<Integer> indexes = new ArrayList<>();
+        for (int i = checkboxList.size() - 1; i >= 0; i--) {
+            if (checkboxList.get(i).isSelected()) {
+                listPanel.remove(checkboxList.get(i));
+                checkboxList.remove(i);
+                indexes.add(i);
+            }
+        }
+        listPanel.revalidate();
+        listPanel.repaint();
+        return indexes;
+    }
+    public Integer getElement() {
+        int selectedIndex = -1;
+        int selectedCount = 0;
+        for (int i = checkboxList.size() - 1; i >= 0; i--) {
+            if (checkboxList.get(i).isSelected()) {
+                selectedIndex = i;
+                selectedCount++;
+                if (selectedCount > 1) {
+                    return null;
+                }
+            }
+        }
+        return selectedCount == 1 ? selectedIndex : null;
+    }
+
+    public ArrayList<Integer> importElements(){
+        return null;
     }
 }

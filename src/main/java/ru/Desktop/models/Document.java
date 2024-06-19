@@ -1,6 +1,9 @@
 package ru.Desktop.models;
 
 import org.bson.types.ObjectId;
+import ru.Desktop.utils.DOCUMENT_TYPE;
+import ru.Desktop.utils.DateFieldDescription;
+import ru.Desktop.utils.FieldDescription;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -11,13 +14,19 @@ public abstract class Document {
 
     private ObjectId _id;
     private DOCUMENT_TYPE documentType;
+    @FieldDescription("Номер")
     private String number;
+    @FieldDescription("Дата")
+    @DateFieldDescription
     private Date date;
+    @FieldDescription("Пользователь")
     private String user;
+    @FieldDescription("Сумма")
     private double amount;
 
     public Document(org.bson.Document document) throws ParseException {
         this._id = new ObjectId(document.get("_id").toString());
+        this.documentType = DOCUMENT_TYPE.valueOf(document.get("documentType").toString());
         this.number = document.get("number").toString();
         this.date = new Date(Long.parseLong(document.get("date").toString()));
         this.user = document.get("user").toString();
@@ -81,11 +90,4 @@ public abstract class Document {
         this.amount = amount;
     }
 
-//    public String getInfo(){
-//        return "id=" + id +
-//                ", number='" + number + '\'' +
-//                ", date=" + date +
-//                ", user='" + user + '\'' +
-//                ", amount=" + amount ;
-//    }
 }

@@ -1,14 +1,22 @@
 package ru.Desktop.models;
 
 import org.bson.types.ObjectId;
+import ru.Desktop.utils.DOCUMENT_TYPE;
+import ru.Desktop.utils.FieldDescription;
 
 import java.text.ParseException;
 import java.util.Date;
 
+import static ru.Desktop.utils.Convert.convertDateToFormatString;
+
 public class PaymentRequest extends Document {
+    @FieldDescription("Контрагент")
     private String counterparty;
+    @FieldDescription("Валюта")
     private String currency;
+    @FieldDescription("Курс валюты")
     private double currencyRate;
+    @FieldDescription("Комиссия")
     private double commission;
 
     public PaymentRequest(org.bson.Document document) throws ParseException {
@@ -63,11 +71,6 @@ public class PaymentRequest extends Document {
 
     @Override
     public String toString() {
-        return "PaymentRequest{" + '\'' +
-                " Counterparty='" + counterparty + '\'' +
-                ", currency='" + currency + '\'' +
-                ", currencyRate=" + currencyRate +
-                ", commission=" + commission +
-                '}';
+        return "Заявка на оплату от " + convertDateToFormatString(getDate()) + " номер " + getNumber();
     }
 }

@@ -3,6 +3,7 @@ package ru.Desktop.GUI;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.toedter.calendar.JDateChooser;
 import org.bson.types.ObjectId;
+import ru.Desktop.models.Document;
 import ru.Desktop.models.PaymentRequest;
 import ru.Desktop.repositories.MongoDBRepository;
 
@@ -11,7 +12,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Date;
 
-import static ru.Desktop.models.DOCUMENT_TYPE.PAYMENT_REQUEST;
+import static ru.Desktop.utils.DOCUMENT_TYPE.PAYMENT_REQUEST;
 import static ru.Desktop.repositories.MongoDBRepository.getMongoDBRepository;
 
 public class PaymentRequestCreationDialog extends JDialog {
@@ -25,12 +26,13 @@ public class PaymentRequestCreationDialog extends JDialog {
     private JTextField currencyField;
     private JTextField currencyRateField;
     private JTextField commissionField;
+    private Document document;
 
-    public PaymentRequestCreationDialog(GUI gui) throws IOException {
-        super(gui, "Создание накладной", true);
+    public PaymentRequestCreationDialog(MainWindow mainWindow) throws IOException {
+        super(mainWindow, "Создание накладной", true);
         setSize(400, 300);
         setMinimumSize(new Dimension(450, 300));
-        setLocationRelativeTo(gui);
+        setLocationRelativeTo(mainWindow);
 
         mongoDBRepository = getMongoDBRepository();
 
@@ -93,7 +95,6 @@ public class PaymentRequestCreationDialog extends JDialog {
     }
 
 
-
     private void saveInvoice() {
         String number = numberField.getText();
         if (number.isEmpty()) {
@@ -141,11 +142,15 @@ public class PaymentRequestCreationDialog extends JDialog {
             throw new IllegalArgumentException("Пожалуйста, введите корректную комиссию.");
         }
 
-        PaymentRequest paymentRequest = new PaymentRequest(new ObjectId(), PAYMENT_REQUEST,number, date, user, amount, counterparty, currency,currencyRate, commission);
+        document = new PaymentRequest(new ObjectId(), PAYMENT_REQUEST, number, date, user, amount, counterparty, currency, currencyRate, commission);
         try {
-            mongoDBRepository.putDocument(paymentRequest);
+            mongoDBRepository.putDocument(document);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка при сохранении Документа");
         }
+    }
+
+    public Document getDocument() {
+        return document;
     }
 }

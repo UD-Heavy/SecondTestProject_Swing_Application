@@ -3,7 +3,9 @@ package ru.Desktop.GUI;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.toedter.calendar.JDateChooser;
 import org.bson.types.ObjectId;
-import static ru.Desktop.models.DOCUMENT_TYPE.INVOICE;
+import static ru.Desktop.utils.DOCUMENT_TYPE.INVOICE;
+
+import ru.Desktop.models.Document;
 import ru.Desktop.models.Invoice;
 import ru.Desktop.repositories.MongoDBRepository;
 
@@ -26,11 +28,13 @@ public class InvoiceCreationDialog extends JDialog {
     private JTextField productField;
     private JTextField quantityField;
 
-    public InvoiceCreationDialog(GUI gui) throws IOException {
-        super(gui, "Создание накладной", true);
+    private Document document;
+
+    public InvoiceCreationDialog(MainWindow mainWindow) throws IOException {
+        super(mainWindow, "Создание накладной", true);
         setSize(400, 300);
         setMinimumSize(new Dimension(450, 300));
-        setLocationRelativeTo(gui);
+        setLocationRelativeTo(mainWindow);
 
         mongoDBRepository = getMongoDBRepository();
 
@@ -141,12 +145,16 @@ public class InvoiceCreationDialog extends JDialog {
             throw new IllegalArgumentException("Пожалуйста, введите корректное количество.");
         }
 
-        Invoice invoice = new Invoice(new ObjectId(), INVOICE, number, date, user, amount, currency,
+        document = new Invoice(new ObjectId(), INVOICE, number, date, user, amount, currency,
                 currencyRate, product, quantity);
         try {
-            mongoDBRepository.putDocument(invoice);
+            mongoDBRepository.putDocument(document);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Ошибка при сохранении Документа");
         }
+    }
+
+    public Document getDocument() {
+        return document;
     }
 }

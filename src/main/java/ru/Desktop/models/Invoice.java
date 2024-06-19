@@ -1,14 +1,23 @@
 package ru.Desktop.models;
 
 import org.bson.types.ObjectId;
+import ru.Desktop.utils.DOCUMENT_TYPE;
+import ru.Desktop.utils.FieldDescription;
 
 import java.text.ParseException;
 import java.util.Date;
 
+import static ru.Desktop.utils.Convert.convertDateToFormatString;
+
 public class Invoice extends Document {
+
+    @FieldDescription("Валюта")
     private String currency;
+    @FieldDescription("Курс валюты")
     private double currencyRate;
+    @FieldDescription("Товар")
     private String product;
+    @FieldDescription("Количество")
     private double quantity;
 
     public Invoice(org.bson.Document document) throws ParseException {
@@ -63,11 +72,6 @@ public class Invoice extends Document {
 
     @Override
     public String toString() {
-        return "Invoice{" + '\'' +
-                "currency='" + currency + '\'' +
-                ", currencyRate=" + currencyRate +
-                ", product='" + product + '\'' +
-                ", quantity=" + quantity +
-                '}';
+        return "Накладная от " + convertDateToFormatString(getDate()) + " номер " + getNumber();
     }
 }
