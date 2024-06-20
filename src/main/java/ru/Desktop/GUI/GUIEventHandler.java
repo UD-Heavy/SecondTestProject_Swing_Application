@@ -1,5 +1,6 @@
 package ru.Desktop.GUI;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.MongoWriteException;
 import ru.Desktop.utils.DOCUMENT_TYPE;
@@ -172,13 +173,15 @@ public class GUIEventHandler { // класс обработчиков событ
                 mongoDBRepository.putBson(document);
                 mainWindow.updateList(myDocument);
 
+            } catch (IllegalArgumentException | JsonParseException e) {
+                JOptionPane.showMessageDialog(null, "Ошибка при загрузке файла: " +
+                                "Содержимое файла не корректно.",
+                        "Ошибка", JOptionPane.ERROR_MESSAGE);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка при загрузке файла: "
                                 + e.getMessage(),
                         "Ошибка", JOptionPane.ERROR_MESSAGE);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            } catch (MongoWriteException e) {
+            } catch (ParseException | MongoWriteException e) {
                 JOptionPane.showMessageDialog(null, "Ошибка при загрузке файла: " +
                                 "такой документ уже существует.",
                         "Ошибка", JOptionPane.ERROR_MESSAGE);

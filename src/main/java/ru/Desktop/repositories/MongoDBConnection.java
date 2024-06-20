@@ -12,6 +12,7 @@ import java.util.Properties;
 public class MongoDBConnection { // класс, устанавливающий соединение с mongodb
     private static volatile MongoDBConnection mongoDBConnection;
     private final MongoClient mongoClient;
+
     private final MongoCollection<Document> collection;
 
     private MongoDBConnection() throws IOException {

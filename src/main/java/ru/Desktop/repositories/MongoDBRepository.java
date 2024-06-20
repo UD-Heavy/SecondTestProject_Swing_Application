@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import static ru.Desktop.utils.Convert.convertModelDocumentToBsonDocument;
 import static ru.Desktop.utils.DocumentFactory.createDocument;
 
-public class MongoDBRepository { // класс с методами для общения с бд
+public class MongoDBRepository { // класс для общения с бд
 
     private static volatile MongoDBRepository mongoDBRepository;
     private final MongoDBConnection connection;
@@ -65,5 +65,15 @@ public class MongoDBRepository { // класс с методами для общ
         connection.closeConnection();
     }
 
+    public static void setMongoDBRepository(MongoDBRepository mongoDBRepository) {
+        MongoDBRepository.mongoDBRepository = mongoDBRepository;
+    }
 
+    public MongoDBConnection getConnection() {
+        return connection;
+    }
+
+    public MongoCollection<Document> getCollection() {
+        return collection;
+    }
 }
